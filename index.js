@@ -1,6 +1,6 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
-const ObjectId = require('mongodb').ObjectId
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config();
 const cors = require('cors');
 const formData = require('form-data');
@@ -39,7 +39,7 @@ async function run() {
         count,
         bookings
       });
-    })
+    });
 
     // Post api
     app.post('/bookings', async (req, res) => {
@@ -62,11 +62,11 @@ async function run() {
           status: updatedData.status.status
         },
       };
-      console.log(updateDoc)
-      const result = await bookingsCollection.updateOne(filter, updateDoc, options)
-      console.log('updating entry', id)
+      console.log(updateDoc);
+      const result = await bookingsCollection.updateOne(filter, updateDoc, options);
+      console.log('updating entry', id);
       res.json(result);
-    })
+    });
 
     // Delete api
     app.delete('/bookings/:id', async (req, res) => {
@@ -74,7 +74,7 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const result = await bookingsCollection.deleteOne(query);
       res.json(result);
-    })
+    });
 
     /* Users Data */
 
@@ -87,7 +87,7 @@ async function run() {
         count,
         users
       });
-    })
+    });
 
     // get single user 
     app.get('/users/:id', async (req, res) => {
@@ -100,7 +100,7 @@ async function run() {
         count,
         users
       });
-    })
+    });
 
     // Post api
     app.post('/users', async (req, res) => {
@@ -122,7 +122,7 @@ async function run() {
         count,
         settings
       });
-    })
+    });
 
 
     // Post api
@@ -147,12 +147,12 @@ async function run() {
           ...settings
         },
       };
-      console.log(updateDoc)
+      console.log(updateDoc);
       const result = await settingsCollection.updateOne(filter, updateDoc, options);
       console.log('updating settings', id);
       console.log(result);
       res.json(result);
-    })
+    });
 
     //get trip info form
     app.get('/form/trip-information', async (req, res) => {
@@ -163,7 +163,27 @@ async function run() {
         count,
         forms
       });
-    })
+    });
+    //gogogaga
+
+    app.put('/form/trip-information/:id', async (req, res) => {
+      const id = req.params.id;
+      const updatedData = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          updatedData
+        },
+      };
+      console.log(updateDoc);
+      // const result = await bookingsCollection.updateOne(filter, updateDoc, options);
+      console.log('updating entry', id);
+      // res.json(result);
+    });
+
+
+
 
     //get guest info form
     app.get('/form/guest-information', async (req, res) => {
@@ -174,7 +194,7 @@ async function run() {
         count,
         forms
       });
-    })
+    });
 
 
 
@@ -182,10 +202,10 @@ async function run() {
     app.get('/default-values', async (req, res) => {
       const cursor = database.collection('default_values').find({});
       const bookings = await cursor.toArray();
-      let values = bookings[0]
+      let values = bookings[0];
       delete values['_id'];
       res.send(values);
-    })
+    });
 
     //email sender
     app.post('/send-mail', async (req, res) => {
@@ -218,8 +238,8 @@ run().catch(console.dir);
 
 app.get('/', (req, res) => {
   res.send('The server for flughafenchauffeur.ch is running.');
-})
+});
 
 app.listen(port, () => {
   console.log('server is running at port', port);
-})
+});
