@@ -158,25 +158,29 @@ async function run() {
     app.get('/form/trip-information', async (req, res) => {
       const cursor = database.collection('trip_information').find({});
       const forms = await cursor.toArray();
-      res.send(...forms);
+      const count = await cursor.count();
+      res.send({
+        count,
+        forms
+      });
     });
     //gogogaga
 
-    app.put('/form/trip-information/:id', async (req, res) => {
-      const id = req.params.id;
-      const updatedData = req.body;
-      const filter = { _id: ObjectId(id) };
-      const options = { upsert: true };
-      const updateDoc = {
-        $set: {
-          updatedData
-        },
-      };
-      console.log(updateDoc);
-      const result = await bookingsCollection.updateOne(filter, updateDoc, options);
-      console.log('updating entry', id);
-      res.json(result);
-    });
+    // app.put('/form/trip-information/:id', async (req, res) => {
+    //   const id = req.params.id;
+    //   const updatedData = req.body;
+    //   const filter = { _id: ObjectId(id) };
+    //   const options = { upsert: true };
+    //   const updateDoc = {
+    //     $set: {
+    //       updatedData
+    //     },
+    //   };
+    //   console.log(updateDoc);
+    //   // const result = await bookingsCollection.updateOne(filter, updateDoc, options);
+    //   console.log('updating entry', id);
+    //   // res.json(result);
+    // });
 
 
 
@@ -186,7 +190,10 @@ async function run() {
       const cursor = database.collection('guest_information').find({});
       const forms = await cursor.toArray();
       const count = await cursor.count();
-      res.send(...forms);
+      res.send({
+        count,
+        forms
+      });
     });
 
 
