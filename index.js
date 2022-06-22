@@ -158,11 +158,7 @@ async function run() {
     app.get('/form/trip-information', async (req, res) => {
       const cursor = database.collection('trip_information').find({});
       const forms = await cursor.toArray();
-      const count = await cursor.count();
-      res.send({
-        count,
-        forms
-      });
+      res.send(...forms);
     });
     //gogogaga
 
@@ -177,9 +173,9 @@ async function run() {
         },
       };
       console.log(updateDoc);
-      // const result = await bookingsCollection.updateOne(filter, updateDoc, options);
+      const result = await bookingsCollection.updateOne(filter, updateDoc, options);
       console.log('updating entry', id);
-      // res.json(result);
+      res.json(result);
     });
 
 
@@ -190,10 +186,7 @@ async function run() {
       const cursor = database.collection('guest_information').find({});
       const forms = await cursor.toArray();
       const count = await cursor.count();
-      res.send({
-        count,
-        forms
-      });
+      res.send(...forms);
     });
 
 
