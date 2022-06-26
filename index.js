@@ -154,46 +154,69 @@ async function run() {
       res.json(result);
     });
 
-    //get trip info form
-    app.get('/form/trip-information', async (req, res) => {
-      const cursor = database.collection('trip_information').find({});
-      const forms = await cursor.toArray();
+    app.get('/form/tripInfo', async (req, res) => {
+      const cursor = database.collection('tripInfo').find({});
+      const inputs = await cursor.toArray();
       const count = await cursor.count();
       res.send({
         count,
-        forms
+        id: 2,
+        title: "Reiseinformationen",
+        collectionName: "tripInfo",
+        description: "Please select whare do you want to get picked up from.",
+        inputs
       });
     });
-    //gogogaga
 
-    // app.put('/form/trip-information/:id', async (req, res) => {
-    //   const id = req.params.id;
-    //   const updatedData = req.body;
-    //   const filter = { _id: ObjectId(id) };
-    //   const options = { upsert: true };
-    //   const updateDoc = {
-    //     $set: {
-    //       updatedData
-    //     },
-    //   };
-    //   console.log(updateDoc);
-    //   // const result = await bookingsCollection.updateOne(filter, updateDoc, options);
-    //   console.log('updating entry', id);
-    //   // res.json(result);
-    // });
+    //updating tripInfo
+    app.put('/form/tripInfo/:id', async (req, res) => {
+      const id = req.params.id;
+      const inputs = req.body;
+      delete inputs['_id']
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          ...inputs
+        },
+      };
+      console.log(updateDoc);
+      const result = await database.collection('tripInfo').updateOne(filter, updateDoc, options);
+      console.log('updating entry', id);
+      res.json(result);
+    });
 
 
-
-
-    //get guest info form
-    app.get('/form/guest-information', async (req, res) => {
-      const cursor = database.collection('guest_information').find({});
-      const forms = await cursor.toArray();
+    app.get('/form/guestInfo', async (req, res) => {
+      const cursor = database.collection('guestInfo').find({});
+      const inputs = await cursor.toArray();
       const count = await cursor.count();
       res.send({
         count,
-        forms
+        id: 3,
+        title: "persönliche Informationen",
+        collectionName: "guestInfo",
+        description: "Please select whare do you want to get picked up from.",
+        inputs
       });
+    });
+
+    //updating guestInfo
+    app.put('/form/guestInfo/:id', async (req, res) => {
+      const id = req.params.id;
+      const inputs = req.body;
+      delete inputs['_id']
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          ...inputs
+        },
+      };
+      console.log(updateDoc);
+      const result = await database.collection('guestInfo').updateOne(filter, updateDoc, options);
+      console.log('updating entry', id);
+      res.json(result);
     });
 
 
