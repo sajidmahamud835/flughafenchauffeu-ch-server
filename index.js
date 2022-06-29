@@ -5,6 +5,7 @@ require('dotenv').config();
 const cors = require('cors');
 const formData = require('form-data');
 const Mailgun = require('mailgun.js');
+const nodemailer = require("nodemailer");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -18,7 +19,7 @@ const db = dbUser;
 const url = `mongodb+srv://${dbUser}:${dbPass}@${dbServer}/${db}?retryWrites=true&w=majority`;
 const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
-console.log("User Name:", dbUser, "& Server URL:", dbServer);
+console.log("User Name:", dbUser, "& Database Server URL:", dbServer);
 
 async function run() {
   try {
@@ -47,7 +48,6 @@ async function run() {
       console.log('Recived booking data form forntend', booking);
 
       const result = await bookingsCollection.insertOne(booking);
-      console.log(result);
       res.json(result);
     });
 
@@ -62,7 +62,6 @@ async function run() {
           status: updatedData.status.status
         },
       };
-      console.log(updateDoc);
       const result = await bookingsCollection.updateOne(filter, updateDoc, options);
       console.log('updating entry', id);
       res.json(result);
@@ -108,7 +107,6 @@ async function run() {
       console.log('Recived user data form forntend', users);
 
       const result = await usersCollection.insertOne(users);
-      console.log(result);
       res.json(result);
     });
 
@@ -131,7 +129,6 @@ async function run() {
       console.log('Recived settings data form forntend', settings);
 
       const result = await settingsCollection.insertOne(settings);
-      console.log(result);
       res.json(result);
     });
 
@@ -147,10 +144,8 @@ async function run() {
           ...settings
         },
       };
-      console.log(updateDoc);
       const result = await settingsCollection.updateOne(filter, updateDoc, options);
       console.log('updating settings', id);
-      console.log(result);
       res.json(result);
     });
 
@@ -180,7 +175,6 @@ async function run() {
           ...inputs
         },
       };
-      console.log(updateDoc);
       const result = await database.collection('tripInfo').updateOne(filter, updateDoc, options);
       console.log('updating entry', id);
       res.json(result);
@@ -213,7 +207,6 @@ async function run() {
           ...inputs
         },
       };
-      console.log(updateDoc);
       const result = await database.collection('guestInfo').updateOne(filter, updateDoc, options);
       console.log('updating entry', id);
       res.json(result);
@@ -230,24 +223,76 @@ async function run() {
       res.send(values);
     });
 
+    app.get('/email', async (req, res) => {
+      // create reusable transporter object using the default SMTP transport
+      let transporter = nodemailer.createTransport({
+        host: "130.hosttech.eu",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: "web185p3", // user
+          pass: "BigB0ss135@#", //  password
+        },
+      });
+
+      // send mail with defined transport object
+      let info = await transporter.sendMail({
+        from: '"FlughafenChauffeur" <no-reply@flughafenchauffeur.ch>', // sender address
+        to: ["sajidmahamud835@gmail.com", "sajid.mahamud.835@gmail.com"], // list of receivers
+        subject: "Hello ✔", // Subject line
+        text: "Hello world? html", // plain text body
+        html: "<b>Hello world? test</b>", // html body
+      });
+
+      console.log("Message sent: %s", info.messageId);
+      res.send(info);
+      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+    });
+
     //email sender
     app.post('/send-mail', async (req, res) => {
       const email = req.body;
       console.log('Recived email data form forntend', email);
-      const mailgun = new Mailgun(formData);
-      const mg = mailgun.client({
-        username: 'api',
-        key: '8d3e51bcbf55e2c44a8d1057aa653a00-50f43e91-a2a788fb',
-      });
-      mg.messages
-        .create('sandbox7655551c2ecd4f4e9579f5ad6a7a936e.mailgun.org', {
-          from: email.from,
-          to: email.to,
-          subject: email.subject,
-          text: email.text,
-        })
-        .then(msg => console.log(msg) && res.json(msg)) // logs response data
-        .catch(err => console.log(err)); // logs any error`;
+      if (false) {
+        const mailgun = new Mailgun(formData);
+        const mg = mailgun.client({
+          username: 'api',
+          key: '8d3e51bcbf55e2c44a8d1057aa653a00-50f43e91-a2a788fb',
+        });
+        mg.messages
+          .create('sandbox7655551c2ecd4f4e9579f5ad6a7a936e.mailgun.org', {
+            from: email.from,
+            to: email.to,
+            subject: email.subject,
+            text: email.text,
+          })
+          .then(msg => console.log(msg) && res.json(msg)) // logs response data
+          .catch(err => console.log(err)); // logs any error`;
+      } else {
+        // create reusable transporter object using the default SMTP transport
+        let transporter = nodemailer.createTransport({
+          host: "130.hosttech.eu",
+          port: 587,
+          secure: false, // true for 465, false for other ports
+          auth: {
+            user: "web185p3", // user
+            pass: "BigB0ss135@#", //  password
+          },
+        });
+
+        // send mail with defined transport object
+        let info = await transporter.sendMail({
+          from: email.from, // sender address
+          to: email.to, // list of receivers
+          subject: email.subject, // Subject line
+          text: email.text, // plain text body
+          // html: "<b>Hello world? test</b>", // html body
+        });
+
+        console.log("Message sent: %s", info.messageId);
+        res.send(info);
+        // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+      }
     });
 
 
